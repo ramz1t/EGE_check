@@ -12,9 +12,15 @@ import pandas as pd
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 alphabet ='0123456789АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЦЪЫЬЭЮЯ,-'
+numbers = '0123456789'
+letters = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+extra = [
+    '2-1coma', '2-2minus'
+]
 
+chrs = {'l': letters, 'n': numbers}
 
-def emnist_model():
+def emnist_model(type: str):
     model = Sequential()
     model.add(Convolution2D(filters=32, kernel_size=(3, 3), padding='valid', input_shape=(28, 28, 1), activation='relu'))
     model.add(Convolution2D(filters=64, kernel_size=(3, 3), activation='relu'))
@@ -23,11 +29,11 @@ def emnist_model():
     model.add(Flatten())
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(len(alphabet), activation='softmax'))
+    model.add(Dense(len(chrs[type]), activation='softmax'))
     model.compile(loss='categorical_crossentropy', optimizer='adadelta', metrics=['accuracy'])
     return model
 
-def emnist_model2():
+def emnist_model2(type: str):
     model = Sequential()
     model.add(Convolution2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(28, 28, 1)))
     model.add(MaxPooling2D((2, 2)))
@@ -38,11 +44,11 @@ def emnist_model2():
     model.add(Flatten())
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(len(alphabet), activation='softmax'))
+    model.add(Dense(len(chrs[type]), activation='softmax'))
     model.compile(loss='categorical_crossentropy', optimizer='adadelta', metrics=['accuracy'])
     return model
 
-def emnist_model3():
+def emnist_model3(type: str):
     model = Sequential()
     model.add(Convolution2D(filters=32, kernel_size=(3, 3), padding='same', input_shape=(28, 28, 1), activation='relu'))
     model.add(Convolution2D(filters=32, kernel_size=(3, 3), padding='same', activation='relu'))
@@ -55,43 +61,43 @@ def emnist_model3():
     model.add(Flatten())
     model.add(Dense(512, activation="relu"))
     model.add(Dropout(0.5))
-    model.add(Dense(len(alphabet), activation="softmax"))
+    model.add(Dense(len(chrs[type]), activation="softmax"))
     model.compile(loss='categorical_crossentropy', optimizer=RMSprop(lr=0.001, rho=0.9, epsilon=1e-08, decay=0.0), metrics=['accuracy'])
     return model
 
 
-def emnist_train(model):
+def emnist_train(model: Any, type: str):
     print('Старт предобработки данных и обучения')
     t_start = time.time()
 
-    x = pd.read_csv('x.csv')
+    x = pd.read_csv(type + 'x.csv')
     x = x.drop(x.columns[[0]], axis=1)
     x = x.values
-    y = pd.read_csv('y.csv')['0'].values
+    y = pd.read_csv(type + 'y.csv')['0'].values
 
     X_train, X_test, y_train, y_test = train_test_split(x, y, shuffle=True, test_size=0.15)
 
     X_train = np.reshape(X_train, (X_train.shape[0], 28, 28, 1))
     X_test = np.reshape(X_test, (X_test.shape[0], 28, 28, 1))
 
-    print(X_train.shape, y_train.shape, X_test.shape, y_test.shape, len(alphabet))
+    print(X_train.shape, y_train.shape, X_test.shape, y_test.shape, len(chrs[type]))
 
-    y_train_cat = keras.utils.to_categorical(y_train, len(alphabet))
-    y_test_cat = keras.utils.to_categorical(y_test, len(alphabet))
+    y_train_cat = keras.utils.to_categorical(y_train, len(chrs[type]))
+    y_test_cat = keras.utils.to_categorical(y_test, len(chrs[type]))
 
     learning_rate_reduction = keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', patience=3, verbose=1, factor=0.5, min_lr=0.00001)
 
-    model.fit(X_train, y_train_cat, validation_data=(X_test, y_test_cat), callbacks=[learning_rate_reduction], batch_size=128, epochs=50)
-    print("Модель обучилась, dT (min):", (time.time() - t_start) / 60)
+    model.fit(X_train, y_train_cat, validation_data=(X_test, y_test_cat), callbacks=[learning_rate_reduction], batch_size=128, epochs=30)
+    print(f"{type} Модель обучилась, dT (min):", (time.time() - t_start) / 60)
 
 
-def emnist_predict_img(model, img):
+def emnist_predict_img(model, img, type: str):
     img_arr = np.expand_dims(img, axis=0)
     img_arr = 1 - img_arr / 255.0
     img_arr = img_arr.reshape((1, 28, 28, 1))
     predict = model.predict([img_arr])
     result = np.argmax(predict, axis=1)
-    return alphabet[result[0]]
+    return chrs[type][result[0]]
 
 def letters_extract(image_file: str, out_size=28):
     img = cv2.imread(image_file)
@@ -124,29 +130,27 @@ def letters_extract(image_file: str, out_size=28):
 
 
     letters.sort(key=lambda x: x[0], reverse=False)
-    # cv2.imshow("Input", img)
-    # cv2.imshow("Gray", thresh)
-    # cv2.imshow("Enlarged", img_erode)
+    # я
     cv2.imshow("Output", output)
     cv2.waitKey(0)    
     return letters
 
 
-def img_to_str(model: Any, image_file: str):
+def img_to_str(model: Any, image_file: str, type: str):
     letters = letters_extract(image_file)
     s_out = ""
     for i in range(len(letters)):
-        s_out += emnist_predict_img(model, letters[i][2])
+        s_out += emnist_predict_img(model, letters[i][2], type)
     return s_out
 
 
 if __name__ == "__main__":
+    type = 'n'
+    model = emnist_model3(type)
+    emnist_train(model, type)
+    model.save(f'keras_models/{type}_ege_model3.h5')
 
-    # model = emnist_model3()
-    # emnist_train(model)
-    # model.save('keras_models/ege_model3.h5')
-
-    model = keras.models.load_model('keras_models/ege_model3.h5')
+    model = keras.models.load_model(f'keras_models/{type}_ege_model3.h5')
     print('Model loaded')
-    s_out = img_to_str(model, "photos/test.png")
+    s_out = img_to_str(model, "photos/test.png", type)
     print(s_out)
