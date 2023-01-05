@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from uvicorn import run
 from fastapi.staticfiles import StaticFiles
 from fastapi.requests import Request
@@ -26,6 +26,16 @@ def submit_list(request: Request, files: List[UploadFile] = File(...)):
     for file in files:
         print(file.filename)
     return templates.TemplateResponse('submit.html', {'request': request, 'message': f'{len(files)} файл(ов) успешно сохранены'})
+
+
+@app.get('/check')
+def check_page(request: Request):
+    return templates.TemplateResponse('check.html', {'request': request})
+
+
+@app.post('/check')
+def get_result(request: Request, number: str = Form(...)):
+    return templates.TemplateResponse('check.html', {'request': request, 'number': number})
 
 
 if __name__ == '__main__':

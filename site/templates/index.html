@@ -6,12 +6,77 @@
     <title>Проверка ЕГЭ</title>
 </head>
 
-<body>
+<body onload="loadAge()">
     {% include 'navbar.html' %}
     <div class="container">
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor tenetur, provident dolores suscipit quo
-            asperiores eius minima maiores dolorem perspiciatis blanditiis at earum soluta ratione, itaque quia
-            praesentium nisi autem!</p>
+        <h1>Сервис для проверки тестовой части ЕГЭ</h1>
+        <br>
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Внимание!</h4>
+            <p>Этот сервис не имеет отношения к оффициальной системе ЕГЭ. Для получения Ваших результатов
+                перейдите <a href="https://www.mos.ru/pgu/ru/services/procedure/0/0/7700000010000186756/"
+                    class="alert-link" target="_blank">сюда</a>.
+            </p>
+            <hr>
+            <p class="mb-0">Сервис сохраняет на сервер загруженные фотографии, но не передает их третим лицам.
+                Используйте только для собственного интереса и не указывайте настоящие личные данные
+            </p>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2>О проекте</h2>
+                <hr>
+                <p>
+                    Проект создан с целью лучше разобраться в работе сверточных нейронных сетей. ИИ обучена на датасете
+                    символов из набора ЕГЭ (русский алфавит + цифры + минус + запятая). Не работает с бланком экзамена
+                    по английскому языку.
+                </p>
+                <div class="card mb-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="https://avatars.githubusercontent.com/u/75879061?v=4"
+                                class="img-fluid rounded-start" alt="ramz1t_photo">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <div>
+                                    <h5 class="card-title">Автор: <b>Ramz1t</b></h5>
+                                    <p class="card-text">
+                                        Москва, Россия, <span id="age">1</span> лет.
+                                    </p>
+                                </div>
+
+                                <a href="https://github.com/ramz1t" target="_blank" class="btn btn-primary">Github</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h2>Стэк</h2>
+                <div class="stack-list">
+                    <div class="stack-card">
+                        <img src="{{ url_for('static', path='logos/python.svg') }}" alt="python_logo">
+                        <p>Python</p>
+                    </div>
+                    <div class="stack-card">
+                        <img src="{{ url_for('static', path='logos/fastapi.svg') }}" alt="fastapi_logo">
+                        <p>FastAPI</p>
+                    </div>
+                    <div class="stack-card">
+                        <img src="{{ url_for('static', path='logos/tensorflow.svg') }}" alt="tensorlow_logo">
+                        <p>Tensorflow</p>
+                    </div>
+                    <div class="stack-card">
+                        <img src="{{ url_for('static', path='logos/postgresql.svg') }}" alt="posgresql_logo">
+                        <p>PostreSQL</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
     </div>
 
 

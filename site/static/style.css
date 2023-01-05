@@ -8,6 +8,8 @@ nav {
 
 .form_image {
     width: 200px;
+    border: 1px solid black;
+    border-radius: 0.375rem;
 }
 
 .form {
@@ -16,8 +18,54 @@ nav {
     gap: 1rem;
 }
 
+.form button {
+    width: fit-content;
+}
+
+.result_field {
+    width: 300px;
+    border-radius: 10px;
+}
+
+.result_number_field {
+    padding-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .form_list {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+}
+
+.stack-card img {
+    width: 30px;
+}
+
+.stack-card p {
+    margin: 0;
+}
+
+.stack-card {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid gainsboro;
+    width: fit-content;
+    border-radius: 15px;
+}
+
+.stack-list {
+    gap: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
