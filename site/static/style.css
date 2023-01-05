@@ -1,0 +1,23 @@
+body {
+    font-family: 'Manrope', sans-serif !important;
+}
+
+nav {
+    margin-bottom: 10px;
+}
+
+.form_image {
+    width: 200px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form_list {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}

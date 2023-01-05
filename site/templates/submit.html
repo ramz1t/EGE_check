@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'head.html' %}
+
+    <title>Проверка ЕГЭ</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <form method="post" enctype="multipart/form-data" class="form">
+            <h1 class="display-6">Загрузите бланки для проверки</h1>
+
+            <input onchange="updateImageDisplay()" id="files" name="files" class="form-control" type="file"
+                id="formFileMultiple" multiple>
+            <div class="preview">Файлы не выбраны</div>
+            <button class="btn btn-success">Отправить</button>
+        </form>
+
+    </div>
+</body>
+
+</html>
