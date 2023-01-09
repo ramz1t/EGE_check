@@ -158,7 +158,7 @@ def img_to_str(model: Any, image_file: str, type: str):
 
 
 if __name__ == "__main__":
-    type = 'n'
+    type = 'l'
     # model = ege_model_3(type)
     # emnist_train(model, type)
     # model.save(f'keras_models/{type}_ege_model3.h5')
