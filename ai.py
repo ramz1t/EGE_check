@@ -138,10 +138,6 @@ class EgeModel:
 
 
 if __name__ == "__main__":
-    # type = 'l'
-    # model = ege_model_3(type)
-    # emnist_train(model, type)
-    # model.save(f'keras_models/{type}_ege_model3.h5')
     ai = EgeModel('n')
     s_out = ai.img_to_str("photos/test.png")
     print(s_out)
