@@ -1,24 +1,55 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.sql import text
+from typing import *
 from os import getenv
 from dotenv import load_dotenv
+from pydantic import BaseModel
+from fastapi.responses import JSONResponse
 
 load_dotenv()
 engine = create_engine(getenv('POSTGRESQL_CONNECTION'))
 Base = declarative_base()
+Sessions = sessionmaker(bind=engine)
 
 
 class Exam(Base):
+
+    class ApiModel(BaseModel):
+        exam_id: str
+        scores: List[List[int]]
+
+
     __tablename__ = 'exam'
 
     exam_id = Column(String(16), primary_key=True)
     scores = Column(MutableList.as_mutable(ARRAY(Integer, dimensions=2)))
 
+    def add(self, body: ApiModel):
+        with Sessions() as sess:
+            exam = Exam(exam_id=body.exam_id, scores=body.scores)
+            sess.add(exam)
+            sess.commit()
+        return JSONResponse({'message': 'added'})
+
+    
+    def delete(self, exam_id: str):
+        with Sessions() as sess:
+            exam = sess.query(Exam).filter_by(exam_id=exam_id).first()
+            sess.delete(exam)
+            sess.commit()
+        return JSONResponse({'message': f'exam with ID: {exam_id} deleted'})
+
 
 class Variant(Base):
+
+    class ApiModel(BaseModel):
+        variant_id: str
+        answers: List[str]
+        exam_id: str
+
     __tablename__ = 'variant'
 
     variant_id = Column(Integer, primary_key=True)

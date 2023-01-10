@@ -4,10 +4,15 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.requests import Request
 from fastapi.templating import Jinja2Templates
 from typing import List
+from db import *
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="site/static"), name="static")
 templates = Jinja2Templates(directory="site/templates")
+
+exam = Exam()
+variant = Variant()
+solution = Solution()
 
 
 @app.get('/')
@@ -36,6 +41,16 @@ def check_page(request: Request):
 @app.post('/check')
 def get_result(request: Request, number: str = Form(...)):
     return templates.TemplateResponse('check.html', {'request': request, 'number': number})
+
+
+@app.post('/add-exam')
+def add_exam(request: Request, body: Exam.ApiModel):
+    return exam.add(body)
+
+
+@app.post('/delete-exam')
+def delete_exam(request: Request, exam_id: str):
+    return exam.delete(exam_id)
 
 
 if __name__ == '__main__':
