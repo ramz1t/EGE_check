@@ -28,9 +28,9 @@ def normalize_numbers():
         for file in files:
             img_dir = f'{files_dir}/{file}'
             with Image.open(img_dir) as img:
-                # img = img.crop((30, 30, img.height - 30, img.width - 30))
-                # img.thumbnail((28, 28))
-                # img.save(img_dir)
+                img = img.crop((30, 30, img.height - 30, img.width - 30))
+                img.thumbnail((28, 28))
+                img.save(img_dir)
                 arr_caption=['2-2','-22','-2-2','22']
                 arr_translation = [(2, 2), (2, -2), (-2, 2), (-2, -2)]
                 for i in range(4):

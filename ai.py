@@ -8,7 +8,10 @@ from keras.optimizers import RMSprop
 from typing import *
 import time
 from sklearn.model_selection import train_test_split
+import sklearn.metrics as metrics
 import pandas as pd
+import seaborn as sn
+import matplotlib.pyplot as plt
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -53,12 +56,7 @@ class EgeModel:
         self.model.add(Dense(len(chrs[self.type]), activation="softmax"))
         self.model.compile(loss='categorical_crossentropy', optimizer=RMSprop(lr=0.001, rho=0.9, epsilon=1e-08, decay=0.0), metrics=['accuracy'])
 
-
-    def train(self):
-        ''' Обучает модель для символов ЕГЭ '''
-        print('Старт предобработки данных и обучения')
-        t_start = time.time() # время старта
-
+    def make_data(self):
         x = pd.read_csv(f'./csv/{self.type}x.csv') # чтение csv с данными для обучения
         x = x.drop(x.columns[[0]], axis=1) # удаление строки index
         x = x.values # чтение массива с данными
@@ -74,9 +72,18 @@ class EgeModel:
         y_train_cat = keras.utils.to_categorical(y_train, len(chrs[self.type])) # преобазование значения символа в форму выходного слоя нейросети
         y_test_cat = keras.utils.to_categorical(y_test, len(chrs[self.type]))
 
+        return X_train, X_test, y_train_cat, y_test_cat
+
+    def train(self):
+        ''' Обучает модель для символов ЕГЭ '''
+        print('Старт предобработки данных и обучения')
+        t_start = time.time() # время старта
+
+        X_train, X_test, y_train, y_test = self.make_data()
+
         learning_rate_reduction = keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', patience=3, verbose=1, factor=0.5, min_lr=0.00001)
 
-        self.model.fit(X_train, y_train_cat, validation_data=(X_test, y_test_cat), callbacks=[learning_rate_reduction], batch_size=128, epochs=30) # обучение нейросети
+        self.model.fit(X_train, y_train, validation_data=(X_test, y_test), callbacks=[learning_rate_reduction], batch_size=128, epochs=30) # обучение нейросети
         print(f"{self.type} Модель обучилась, dT (min):", (time.time() - t_start) / 60) # отчет о завершении и затраченное время в мин
         self.model.save(f'keras_models/{self.type}_ege_model3.h5')
 
@@ -87,6 +94,8 @@ class EgeModel:
         img_arr = 1 - img_arr / 255.0 # конвертация диапазона 0-255 в 0-1
         img_arr = img_arr.reshape((1, 28, 28, 1)) # "выпрямление" данных
         predict = self.model.predict([img_arr]) # вычисление результата
+        # for symbol_i in range(len(predict[0])):
+        #     print(f'Prediction for symbol "{chrs[self.type][symbol_i]}" is: {predict[0][symbol_i]}')
         result = np.argmax(predict, axis=1) # поиск символа в алфавите
         return chrs[self.type][result[0]]
 
@@ -136,8 +145,24 @@ class EgeModel:
             s_out += self.ege_predict_img(letters[i][2]) # присоединение следующей буквы к итоговой строке
         return s_out
 
+    def model_info(self):
+        print(self.model.summary())
+
+    def confusion_matrix(self):
+        _, X_test, _, y_test = self.make_data()
+        y_pred = self.model.predict(X_test)
+        y_test_labels = np.argmax(y_test, axis=1)
+        y_pred_labels = np.argmax(y_pred, axis=1)
+        confusion_matrix = metrics.confusion_matrix(y_true=y_test_labels, y_pred=y_pred_labels)
+        df_cm = pd.DataFrame(confusion_matrix, index = [i for i in chrs[self.type]],
+                  columns = [i for i in chrs[self.type]])
+        plt.figure(figsize = (10,7))
+        sn.heatmap(df_cm, annot=True)
+        plt.show()
+
 
 if __name__ == "__main__":
-    ai = EgeModel('n')
-    s_out = ai.img_to_str("photos/test.png")
-    print(s_out)
+    ai = EgeModel('l')
+    # s_out = ai.img_to_str("photos/test.png")
+    # print(s_out)
+    ai.confusion_matrix()
