@@ -12,6 +12,7 @@ import sklearn.metrics as metrics
 import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
+from db import Exam
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -23,6 +24,8 @@ extra = ',-'
 
 # Словарь для выбора типа модели
 chrs = {'l': letters, 'n': numbers}
+
+exam = Exam()
 
 
 class EgeModel:
@@ -88,7 +91,23 @@ class EgeModel:
         self.model.save(f'keras_models/{self.type}_ege_model3.h5')
 
 
-    def ege_predict_img(self, img):
+    def model_info(self):
+        print(self.model.summary())
+
+    def confusion_matrix(self):
+        _, X_test, _, y_test = self.make_data()
+        y_pred = self.model.predict(X_test)
+        y_test_labels = np.argmax(y_test, axis=1)
+        y_pred_labels = np.argmax(y_pred, axis=1)
+        confusion_matrix = metrics.confusion_matrix(y_true=y_test_labels, y_pred=y_pred_labels)
+        df_cm = pd.DataFrame(confusion_matrix, index = [i for i in chrs[self.type]],
+                  columns = [i for i in chrs[self.type]])
+        plt.figure(figsize = (10,7))
+        sn.heatmap(df_cm, annot=True)
+        plt.show()
+
+
+    def ege_predict_symbol(self, img):
         ''' Возвращает 1 символ на фото '''
         img_arr = np.expand_dims(img, axis=0) 
         img_arr = 1 - img_arr / 255.0 # конвертация диапазона 0-255 в 0-1
@@ -100,9 +119,8 @@ class EgeModel:
         return chrs[self.type][result[0]]
 
 
-    def letters_extract(self, image_file: str, out_size=28):
+    def letters_extract(self, img, out_size=28):
         ''' Выделяет и возвращает массив с символами на фото '''
-        img = cv2.imread(image_file) # чтение фото
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # обесцвечивание 
         _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY) # повыение контраста
         img_erode = cv2.erode(thresh, np.ones((3, 3), np.uint8), iterations=1) # утолшение символа
@@ -132,33 +150,43 @@ class EgeModel:
 
 
         letters.sort(key=lambda x: x[0], reverse=False) # сортировка букв по Х координате
-        cv2.imshow("Letters", output)
-        cv2.waitKey(0)    
+        # cv2.imshow("Letters", output)
+        # cv2.waitKey(0)    
         return letters
 
 
-    def img_to_str(self, image_file: str):
+    def img_to_str(self, img):
         ''' Конвертирует символы на фотографии в строку '''
-        letters = self.letters_extract(image_file=image_file) # получение массива букв с фото
+        letters = self.letters_extract(img=img) # получение массива букв с фото
         s_out = ""
         for i in range(len(letters)):
             s_out += self.ege_predict_img(letters[i][2]) # присоединение следующей буквы к итоговой строке
         return s_out
 
-    def model_info(self):
-        print(self.model.summary())
 
-    def confusion_matrix(self):
-        _, X_test, _, y_test = self.make_data()
-        y_pred = self.model.predict(X_test)
-        y_test_labels = np.argmax(y_test, axis=1)
-        y_pred_labels = np.argmax(y_pred, axis=1)
-        confusion_matrix = metrics.confusion_matrix(y_true=y_test_labels, y_pred=y_pred_labels)
-        df_cm = pd.DataFrame(confusion_matrix, index = [i for i in chrs[self.type]],
-                  columns = [i for i in chrs[self.type]])
-        plt.figure(figsize = (10,7))
-        sn.heatmap(df_cm, annot=True)
-        plt.show()
+    def img_to_str(self, img):
+        ''' Конвертирует символы на фотографии в строку '''
+        letters = self.letters_extract(img=img) # получение массива букв с фото
+        s_out = ""
+        for i in range(len(letters)):
+            s_out += self.ege_predict_symbol(letters[i][2]) # присоединение следующей буквы к итоговой строке
+        return s_out
+
+
+    async def check_blanks(self, img_urls: List[str]):
+        for url in img_urls:
+            answers = []
+            img = cv2.imread(url)
+            exam_id_area = img[300:450, 150:850]
+            exam_id = self.img_to_str(exam_id_area)
+            print('exam_id', exam_id)
+            scores_data = exam.get_scores_data(exam_id)
+            for i in range(1, len(scores_data) + 1):
+                y = 300 * (i + 1)
+                answer_area = img[y:y+150, 150:850]
+                answer = self.img_to_str(answer_area)
+                answers.append(answer)
+            print(exam_id, answers)
 
 
 if __name__ == "__main__":

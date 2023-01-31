@@ -5,6 +5,9 @@ from fastapi.requests import Request
 from fastapi.templating import Jinja2Templates
 from typing import List
 from db import *
+import io
+from ai import EgeModel
+import asyncio
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="site/static"), name="static")
@@ -13,6 +16,7 @@ templates = Jinja2Templates(directory="site/templates")
 exam = Exam()
 variant = Variant()
 solution = Solution()
+ai = EgeModel('n')
 
 
 @app.get('/')
@@ -26,11 +30,16 @@ def submit_page(request: Request):
 
 
 @app.post('/submit')
-def submit_list(request: Request, files: List[UploadFile] = File(...)):
-    print(files)
+async def submit_list(request: Request, files: List[UploadFile] = File(...)):
+    filenames = []
     for file in files:
-        print(file.filename)
-    return templates.TemplateResponse('submit.html', {'request': request, 'message': f'{len(files)} файл(ов) успешно сохранены'})
+        filename = f'{file.filename}'
+        filenames.append(filename)
+        file_object = io.BytesIO(await file.read())
+        with open(filename, 'wb') as f:
+            f.write(file_object.getvalue())
+    task = asyncio.create_task(ai.check_blanks(filenames))
+    return templates.TemplateResponse('submit.html', {'request': request, 'message': f'{len(files)} файл(ов) успешно сохранены и начинают проверяться'})
 
 
 @app.get('/check')

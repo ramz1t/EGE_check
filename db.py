@@ -43,6 +43,10 @@ class Exam(Base):
         return JSONResponse({'message': f'exam with ID: {exam_id} deleted'})
 
 
+    def get_scores_data(self, exam_id: str):
+        return range(7)
+
+
 class Variant(Base):
 
     class ApiModel(BaseModel):
