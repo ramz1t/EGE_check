@@ -60,12 +60,19 @@ def add_exam_page(request: Request):
 
 @app.get('/manage/variants')
 def manage_variants(request: Request):
-    return templates.TemplateResponse('manage-variants.html', {'request': request})
+    variants = variant.get_all()
+    return templates.TemplateResponse('manage-variants.html', {'request': request, 'variants': variants})
 
 
 @app.get('/manage/variants/add')
 def add_variant_page(request: Request):
-    return templates.TemplateResponse('add-variant.html', {'request': request})
+    exam_ids = exam.get_ids()
+    return templates.TemplateResponse('add-variant.html', {'request': request, 'exams_ids': exam_ids})
+
+
+@app.get('/exam-info')
+def get_exam_info(request: Request, exam_id: str):
+    return exam.get_scores_data(exam_id)
 
 
 @app.get('/check')
@@ -86,6 +93,16 @@ def add_exam(request: Request, body: Exam.ApiModel):
 @app.post('/delete-exam')
 def delete_exam(request: Request, exam_id: str):
     return exam.delete(exam_id)
+
+
+@app.post('/add-variant')
+def add_variant(request: Request, body: Variant.ApiModel):
+    return variant.add(body)
+
+
+@app.post('/delete-variant')
+def delete_variant(request: Request, variant_id: int):
+    return variant.delete(variant_id)
 
 
 if __name__ == '__main__':

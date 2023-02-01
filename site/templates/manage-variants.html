@@ -20,6 +20,16 @@
         </nav>
         <h1 class="display-6">Варианты</h1>
         <a class="btn btn-primary" href="/manage/variants/add" role="button">Добавить</a>
+        <div class="exams-container">
+            {% for variant in variants %}
+            <div class="flex flex-row center exam-item" style="gap: 15px">
+                <p><b>ID варианта: {{variant.variant_id}}</b></p>
+                <p>ID экзамена: {{variant.exam_id}}</p>
+                <button onclick="deleteVariant('{{variant.variant_id}}')" type="button"
+                    class="btn btn-danger">Удалить</button>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </body>
 

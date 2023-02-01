@@ -101,3 +101,8 @@ nav {
     gap: 1.25rem;
     margin-top: 20px;
 }
+
+.invalid-input {
+    outline: 2px solid red;
+    outline-offset: 2px;
+}

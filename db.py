@@ -54,6 +54,13 @@ class Exam(Base):
                 raise FileNotFoundError
 
 
+    def get_ids(self):
+        with Sessions() as sess:
+            exams = sess.query(Exam).all()
+            exam_ids = [exam.exam_id for exam in exams]
+            return exam_ids
+
+
     def get_all(self):
         with Sessions() as sess:
             return sess.query(Exam).all()
@@ -61,7 +68,7 @@ class Exam(Base):
 class Variant(Base):
 
     class ApiModel(BaseModel):
-        variant_id: str
+        variant_id: int
         answers: List[str]
         exam_id: str
 
@@ -72,12 +79,33 @@ class Variant(Base):
     exam_id = Column(String(16), ForeignKey('exam.exam_id'), nullable=False)
 
 
+    def add(self, body: ApiModel):
+        with Sessions() as sess:
+            if sess.query(Variant).filter_by(variant_id=body.variant_id).first() is not None:
+                return JSONResponse(status_code=400, content={'message': f'Вариант с ID {body.variant_id} уже есть в системе'})
+            variant = Variant(variant_id=body.variant_id, answers=body.answers, exam_id=body.exam_id)
+            sess.add(variant)
+            sess.commit()
+        return JSONResponse({'message': f'Вариант {body.variant_id} сохранен'})
+
+
+    def delete(self, variant_id: str):
+        with Sessions() as sess:
+            variant = sess.query(Variant).filter_by(variant_id=variant_id).first()
+            sess.delete(variant)
+            sess.commit()
+        return JSONResponse({'message': f'Вариант {variant_id} удален'})
+
+
+    def get_all(self):
+        with Sessions() as sess:
+            return sess.query(Variant).all()
+
+
 class Solution(Base):
     __tablename__ = 'solution'
 
     solution_id = Column(Integer, primary_key=True)
-    name = Column(String(16), nullable=False)
-    surname = Column(String(16), nullable=False)
-    passport = Column(Integer, nullable=False)
+    user_id = Column(Integer, nullable=False)
     answers = Column(MutableList.as_mutable(ARRAY(String(16))))
     variant_id = Column(Integer, ForeignKey('variant.variant_id'), nullable=False)

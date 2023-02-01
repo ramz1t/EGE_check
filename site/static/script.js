@@ -107,7 +107,7 @@ const saveExam = async () => {
         scores[i] = pair
     }
     try {
-        const res = await fetch('http://127.0.0.1:5000/add-exam', {
+        const res = await fetch('/add-exam', {
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -127,7 +127,119 @@ const saveExam = async () => {
 
 const deleteExam = async (examId) => {
     try {
-        const res = await fetch(`http://127.0.0.1:5000/delete-exam?exam_id=${parseInt(examId)}`, {
+        const res = await fetch(`/delete-exam?exam_id=${parseInt(examId)}`, {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/x-www-form-urlencoded'
+            }
+        });
+        const data = await res.json()
+        alert(data.message)
+    } catch (e) {
+        alert('error')
+    }
+}
+
+const saveVariant = async () => {
+    let allValid = true
+    const examId = document.getElementById('exam-select').value
+    const variantId = parseInt(document.getElementById('variant-id').value)
+    const container = document.getElementById('answers-container')
+    if (container.childElementCount === 0) {
+        alert('Добавте ответы, нажав на кнопку "Загрузить поля для ответов"')
+        return
+    }
+    if (examId == 'Выберите экзамен') {
+        alert('Выберите экзамен')
+        return
+    }
+    let answers = Array(container.childElementCount)
+    for (let i = 0; i < container.childElementCount; i += 1) {
+        const inputBox = container.children[i]
+        const type = parseInt(inputBox.children[1].getAttribute('value'))
+        const answer = inputBox.children[2].value
+        if (type === 0) {
+            if (!/^\d+$/.test(answer)) {
+                allValid = false
+                inputBox.classList.add('invalid-input')
+            } else {
+                inputBox.classList.remove('invalid-input')
+            }
+        } else if (type === 1) {
+            if (!/^[а-яА-Я]+$/.test(answer)) {
+                allValid = false
+                inputBox.classList.add('invalid-input')
+            } else {
+                inputBox.classList.remove('invalid-input')
+            }
+        }
+        answers[i] = answer
+    }
+    if (!allValid) {
+        alert('Исправьте ошибки и повторите попытку')
+        return
+    }
+    try {
+        const res = await fetch('/add-variant', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'variant_id': variantId,
+                'answers': answers,
+                'exam_id': examId
+            })
+        });
+        const data = await res.json()
+        alert(data.message)
+    } catch (e) {
+        alert('error')
+    }
+}
+
+const loadExamData = async () => {
+    const exam_id = document.getElementById('exam-select').value
+    const container = document.getElementById('answers-container')
+    if (exam_id == 'Выберите экзамен') {
+        alert('Выберите экзамен')
+        return
+    }
+    try {
+        container.innerHTML = `<p>Загрузка варианта ${exam_id}...</p>`
+        const res = await fetch(`/exam-info?exam_id=${exam_id}`, {
+            headers: {
+                'accept': 'application/json'
+            }
+        });
+        const data = await res.json()
+        container.innerHTML = ''
+        for (let i = 0; i < data.length; i += 1) {
+            let type = ''
+            if (data[i][1] === 0) {
+                type = 'Числовой'
+            } else {
+                type = 'Строка'
+            }
+            container.innerHTML +=
+                `<div class="input-group mb-3">
+            <span style="min-width: 40px;" class="input-group-text" id="inputGroup-sizing-default${i}">${i + 1}</span>
+            <span value=${data[i][1]} style="min-width: 110px;" class="input-group-text" id="inputGroup-sizing-default${i}">${type}</span>
+            <input type="text" class="form-control" aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-default">
+            </div>`
+        }
+    } catch (e) {
+        console.log(e)
+        alert('error')
+    }
+}
+
+const deleteVariant = async (variantId) => {
+    try {
+        const res = await fetch(`/delete-variant?variant_id=${parseInt(variantId)}`, {
             method: 'POST',
             headers: {
                 'accept': 'application/json',

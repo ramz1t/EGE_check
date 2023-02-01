@@ -20,6 +20,29 @@
             </ol>
         </nav>
         <h1 class="display-6">Добавить вариант</h1>
+        <br>
+        <div class="input-group mb-3">
+            <span class="input-group-text">ID варианта</span>
+            <input id="variant-id" type="text" class="form-control" aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-default">
+        </div>
+
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="exam-select">ID экзамена</label>
+            <select class="form-select" id="exam-select">
+                <option selected>Выберите экзамен</option>
+                {% for id in exams_ids %}
+                <option value={{id}}>{{id}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div id="answers-container"></div>
+        <div class="flex flex-row center">
+            <button type="button" class="btn btn-secondary" onclick="loadExamData()">Загрузить поля для ответов</button>
+            <button type="button" class="btn btn-primary" onclick="saveVariant()">Сохранить</button>
+        </div>
+
+
     </div>
 </body>
 
