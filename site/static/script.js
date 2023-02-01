@@ -67,3 +67,56 @@ const loadAge = () => {
     var age = Math.abs(year - 1970)
     document.getElementById('age').innerText = age
 }
+
+const addField = () => {
+    const container = document.getElementById('scores-container')
+    const n = container.childElementCount + 1
+    container.innerHTML += `<div class="flex flex-row center">
+        <p style="font-size: 18px; min-width: 20px;">${n}</p>
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="inputGroupSelect01">Тип ответа</label>
+            <select class="form-select" id="inputGroupSelect01">
+                <option value="0" checked>Числовой</option>
+                <option value="1">Строка</option>
+            </select>
+        </div>
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="inputGroupSelect01">Количество баллов</label>
+            <select class="form-select" id="inputGroupSelect01">
+                <option value="1" checked>Один</option>
+                <option value="2">Два</option>
+                <option value="3">Три</option>
+            </select>
+        </div>
+    </div>`
+}
+
+const saveExam = async () => {
+    const container = document.getElementById('scores-container')
+    const exam_id = document.getElementById('exam_id').value
+    const n = container.childElementCount
+    let scores = Array(n)
+    for (let i = 0; i < n; i += 1) {
+        const type = parseInt(container.children[i].children[1].children[1].value)
+        const value = parseInt(container.children[i].children[2].children[1].value)
+        const pair = [type, value]
+        scores[i] = pair
+    }
+    try {
+        const res = await fetch('http://127.0.0.1:5000/add-exam', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'exam_id': exam_id,
+                'scores': scores
+            })
+        });
+        const data = await res.json()
+        alert(data.message)
+    } catch (e) {
+        alert('error')
+    }
+}

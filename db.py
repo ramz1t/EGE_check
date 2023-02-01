@@ -29,10 +29,12 @@ class Exam(Base):
 
     def add(self, body: ApiModel):
         with Sessions() as sess:
+            if sess.query(Exam).filter_by(exam_id=body.exam_id).first() is not None:
+                return JSONResponse(status_code=401, content={'message': 'Экзамен с таким ID уже есть в системе'})
             exam = Exam(exam_id=body.exam_id, scores=body.scores)
             sess.add(exam)
             sess.commit()
-        return JSONResponse({'message': 'added'})
+        return JSONResponse({'message': 'Экзамен сохранен'})
 
     
     def delete(self, exam_id: str):
@@ -40,7 +42,7 @@ class Exam(Base):
             exam = sess.query(Exam).filter_by(exam_id=exam_id).first()
             sess.delete(exam)
             sess.commit()
-        return JSONResponse({'message': f'exam with ID: {exam_id} deleted'})
+        return JSONResponse({'message': f'Экзамен с ID: {exam_id} удален'})
 
 
     def get_scores_data(self, exam_id: str):

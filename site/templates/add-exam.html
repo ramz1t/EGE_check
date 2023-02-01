@@ -20,6 +20,38 @@
             </ol>
         </nav>
         <h1 class="display-6">Добавить экзамен</h1>
+        <br>
+        <div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="inputGroup-sizing-default">ID экзамена</span>
+                <input id="exam_id" type="text" class="form-control" aria-label="Sizing example input"
+                    aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div id="scores-container">
+                <div class="flex flex-row center">
+                    <p style="font-size: 18px; min-width: 20px;">1</p>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputGroupSelect01">Тип ответа</label>
+                        <select class="form-select" id="inputGroupSelect01">
+                            <option value="0" selected>Числовой</option>
+                            <option value="1">Строка</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputGroupSelect01">Количество баллов</label>
+                        <select class="form-select" id="inputGroupSelect01">
+                            <option value="1" selected>Один</option>
+                            <option value="2">Два</option>
+                            <option value="3">Три</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row center">
+                <button type="button" class="btn btn-secondary" onclick="addField()">Добавить поле</button>
+                <button type="button" class="btn btn-primary" onclick="saveExam()">Сохранить</button>
+            </div>
+        </div>
     </div>
 </body>
 

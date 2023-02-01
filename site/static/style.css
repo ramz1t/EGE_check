@@ -69,3 +69,16 @@ nav {
     flex-direction: column;
     gap: 30px;
 }
+
+.flex {
+    display: flex;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.center {
+    align-items: center;
+    gap: 10px;
+}
