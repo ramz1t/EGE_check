@@ -99,7 +99,7 @@ const saveExam = async () => {
     for (let i = 0; i < n; i += 1) {
         const type = parseInt(container.children[i].children[1].children[1].value)
         const value = parseInt(container.children[i].children[2].children[1].value)
-        const pair = [type, value]
+        const pair = [value, type]
         scores[i] = pair
     }
     try {
