@@ -120,3 +120,19 @@ const saveExam = async () => {
         alert('error')
     }
 }
+
+const deleteExam = async (examId) => {
+    try {
+        const res = await fetch(`http://127.0.0.1:5000/delete-exam?exam_id=${parseInt(examId)}`, {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/x-www-form-urlencoded'
+            }
+        });
+        const data = await res.json()
+        alert(data.message)
+    } catch (e) {
+        alert('error')
+    }
+}

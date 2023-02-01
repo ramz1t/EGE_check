@@ -20,6 +20,17 @@
         </nav>
         <h1 class="display-6">Экзамены</h1>
         <a class="btn btn-primary" href="/manage/exams/add" role="button">Добавить</a>
+        <br>
+        <div class="exams-container">
+            {% for exam in exams %}
+            <div class="flex flex-row center exam-item">
+                <p><b>ID: {{exam.exam_id}}</b></p>
+                <p>Количество номеров:</p>
+                <p>{{exam.scores | length }}</p>
+                <button onclick="deleteExam('{{exam.exam_id}}')" type="button" class="btn btn-danger">Удалить</button>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </body>
 

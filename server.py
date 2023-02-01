@@ -49,7 +49,8 @@ def manage_page(request: Request):
 
 @app.get('/manage/exams')
 def manage_exams(request: Request):
-    return templates.TemplateResponse('manage-exams.html', {'request': request})
+    exams = exam.get_all()
+    return templates.TemplateResponse('manage-exams.html', {'request': request, 'exams': exams})
 
 
 @app.get('/manage/exams/add')

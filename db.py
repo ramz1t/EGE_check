@@ -54,6 +54,10 @@ class Exam(Base):
                 raise FileNotFoundError
 
 
+    def get_all(self):
+        with Sessions() as sess:
+            return sess.query(Exam).all()
+
 class Variant(Base):
 
     class ApiModel(BaseModel):

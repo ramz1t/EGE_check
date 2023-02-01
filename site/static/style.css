@@ -82,3 +82,22 @@ nav {
     align-items: center;
     gap: 10px;
 }
+
+.exam-item {
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 10px;
+    width: fit-content;
+}
+
+.exam-item p {
+    margin: 0;
+}
+
+.exams-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-top: 20px;
+}
