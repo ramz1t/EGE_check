@@ -44,7 +44,12 @@ class Exam(Base):
 
 
     def get_scores_data(self, exam_id: str):
-        return range(7)
+        with Sessions() as sess:
+            exam = sess.query(Exam).filter_by(exam_id=exam_id).first()
+            if exam is not None:
+                return exam.scores
+            else:
+                raise FileNotFoundError
 
 
 class Variant(Base):

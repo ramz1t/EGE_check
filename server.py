@@ -16,7 +16,7 @@ templates = Jinja2Templates(directory="site/templates")
 exam = Exam()
 variant = Variant()
 solution = Solution()
-ai = EgeModel('n')
+ai = EgeModel()
 
 
 @app.get('/')
@@ -33,7 +33,7 @@ def submit_page(request: Request):
 async def submit_list(request: Request, files: List[UploadFile] = File(...)):
     filenames = []
     for file in files:
-        filename = f'{file.filename}'
+        filename = f'./photos/{file.filename}'
         filenames.append(filename)
         file_object = io.BytesIO(await file.read())
         with open(filename, 'wb') as f:
