@@ -42,6 +42,31 @@ async def submit_list(request: Request, files: List[UploadFile] = File(...)):
     return templates.TemplateResponse('submit.html', {'request': request, 'message': f'{len(files)} файл(ов) успешно сохранены и начинают проверяться'})
 
 
+@app.get('/manage')
+def manage_page(request: Request):
+    return templates.TemplateResponse('manage.html', {'request': request})
+
+
+@app.get('/manage/exams')
+def manage_exams(request: Request):
+    return templates.TemplateResponse('manage-exams.html', {'request': request})
+
+
+@app.get('/manage/exams/add')
+def add_exam_page(request: Request):
+    return templates.TemplateResponse('add-exam.html', {'request': request})
+
+
+@app.get('/manage/variants')
+def manage_variants(request: Request):
+    return templates.TemplateResponse('manage-variants.html', {'request': request})
+
+
+@app.get('/manage/variants/add')
+def add_variant_page(request: Request):
+    return templates.TemplateResponse('add-variant.html', {'request': request})
+
+
 @app.get('/check')
 def check_page(request: Request):
     return templates.TemplateResponse('check.html', {'request': request})

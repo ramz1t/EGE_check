@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'head.html' %}
+    <title>Управление</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/manage">Управление БД</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Экзамены</li>
+            </ol>
+        </nav>
+        <h1 class="display-6">Экзамены</h1>
+        <a href="/manage/exams/add">Добавить</a>
+    </div>
+</body>
+
+</html>
