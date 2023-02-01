@@ -94,6 +94,10 @@ const addField = () => {
 const saveExam = async () => {
     const container = document.getElementById('scores-container')
     const exam_id = document.getElementById('exam_id').value
+    if (exam_id === '') {
+        alert('Укажите ID экзамена')
+        return
+    }
     const n = container.childElementCount
     let scores = Array(n)
     for (let i = 0; i < n; i += 1) {
