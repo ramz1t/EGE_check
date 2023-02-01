@@ -12,10 +12,16 @@
 <body>
     {% include 'navbar.html' %}
     <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active" aria-current="page">Управление БД</li>
+            </ol>
+        </nav>
         <h1 class="display-6">Управление БД</h1>
-        <a href="manage/exams">Добавить экзамен</a>
         <br>
-        <a href="manage/variants">Добавить вариант</a>
+        <a href="manage/exams" class="btn btn-primary" tabindex="-1" role="button" style="margin-right: 10px;">Добавить
+            экзамен</a>
+        <a href="manage/variants" class="btn btn-primary" tabindex="-1" role="button">Добавить вариант</a>
     </div>
 </body>
 
